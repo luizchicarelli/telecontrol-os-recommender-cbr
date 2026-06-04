@@ -1,81 +1,144 @@
-🤖 Agente Inteligente Telecontrol
-O Agente Inteligente Telecontrol é um sistema de suporte à decisão. Usa Machine Learning para classificar relatos de clientes e Raciocínio Baseado em Casos (CBR) para recomendar soluções com base no histórico. Ele otimiza tempo e custos de manutenção, exibindo a solução mais assertiva via FastAPI e interface web.
+# 🤖 Agente Inteligente Telecontrol — FPA 3º Termo
 
-🎯 Principais Funcionalidades
-Processamento de Linguagem Natural (NLP): Traduz o problema relatado pelo cliente (texto livre) para um diagnóstico técnico padronizado utilizando TF-IDF e Support Vector Classification (LinearSVC).
+Sistema de recomendação de diagnóstico e solução para ordens de serviço (OS) de equipamentos de refrigeração, combinando **Machine Learning (TF-IDF + LinearSVC)** e **Raciocínio Baseado em Casos (CBR)**.
 
-Raciocínio Baseado em Casos (CBR): Busca casos históricos de manutenções similares baseando-se no produto, tipo de contrato, defeito reclamado e defeito previsto pela IA.
+---
 
-Motor de Regras de Negócio: Filtra e ranqueia as soluções viáveis considerando o limite de custo e a probabilidade de sucesso (taxa de incidência histórica).
+## 📋 Visão Geral
 
-API Integrada (FastAPI): Backend ágil que processa os dados em tempo real e se comunica via formato JSON.
+O projeto foi desenvolvido como trabalho de 3º termo e implementa um pipeline completo de dados, desde o pré-processamento de bases históricas de OS até uma API com interface web para uso em campo. O agente recebe a descrição do problema relatado pelo cliente e retorna:
 
-Interface Amigável (Web UI): Frontend interativo construído com HTML, JavaScript e Bootstrap, desenhado para a operação real do atendente.
+- **Diagnóstico técnico previsto** (classificador ML)
+- **Solução recomendada** com taxa de sucesso histórico
+- **Custo estimado** da intervenção
+- **Casos similares** recuperados da base histórica (CBR)
 
-🏗️ Arquitetura e Pipeline (Os Épicos)
-O desenvolvimento deste sistema foi dividido em fases estruturadas (Épicos) dentro de um ambiente Jupyter Notebook, garantindo rastreabilidade desde os dados brutos até a API em produção:
+---
 
-Épico 2 (Pré-processamento): Limpeza de dicionários, normalização de strings e construção do DataFrame mestre consolidando Ordens de Serviço (OS), defeitos e soluções.
+## 🗂️ Estrutura do Projeto
 
-Épico 3 (Classificador ML): Treinamento do modelo LinearSVC utilizando mapeamento semântico de linguagem natural para defeitos técnicos constatados.
-
-Épico 4 (CBR): Implementação do algoritmo de similaridade (match exato ponderado) para resgatar a solução historicamente mais bem-sucedida.
-
-Épico 5 (Regras de Negócio): Aplicação de thresholds de custo máximo (R$ 1.500) e taxa de sucesso histórico.
-
-Épico 7 (Backend & API): Empacotamento do modelo e das regras em rotas FastAPI para consumo web.
-
-🛠️ Tecnologias Utilizadas
-Linguagem: Python e JavaScript
-
-Machine Learning & Dados: scikit-learn, pandas, numpy
-
-Backend: fastapi, uvicorn, pydantic
-
-Frontend: HTML5, CSS3, Bootstrap 5
-
-Ambiente de Desenvolvimento: Jupyter Notebook / Google Colab / VS Code
-
-🚀 Como Executar o Projeto Localmente
-Pré-requisitos
-Certifique-se de ter o Python 3.10+ instalado e clone este repositório:
-
-Bash
-git clone https://github.com/seu-usuario/telecontrol-ai-agent.git
-cd telecontrol-ai-agent
-1. Instale as dependências
-Abra o seu terminal e instale as bibliotecas necessárias:
-
-Bash
-pip install pandas numpy scikit-learn fastapi uvicorn pydantic nest-asyncio
-2. Prepare o Modelo de IA
-Abra o arquivo FPA_3_termo_V1_9_9.ipynb no Jupyter Notebook ou VS Code.
-
-Execute as células referentes aos Épicos 2, 3, 4 e 5.
-
-Isso carregará os dados CSV, treinará o modelo de linguagem natural e criará as funções de similaridade na memória.
-
-3. Inicie o Servidor da API
-Ainda no notebook, execute a célula correspondente ao Épico 7 (FastAPI).
-
-Você verá no terminal a mensagem: ✅ SERVIDOR API INICIADO NA PORTA 8000!.
-
-O servidor ficará ativo escutando as requisições.
-
-4. Acesse o Frontend
-Com a API rodando, navegue até a pasta do projeto no seu explorador de arquivos e dê um clique duplo no arquivo index.html.
-
-O sistema abrirá no seu navegador padrão.
-
-Insira os dados, digite um problema na linguagem do cliente e clique em Analisar com IA.
-
-📂 Estrutura de Arquivos Recomendada
-Plaintext
-telecontrol-ai-agent/
+```
+FPA_3termo/
+├── data/                              # Dados brutos exportados do sistema
+│   ├── export_os_base.csv             # Base principal de ordens de serviço
+│   ├── export_os_defeito_solucao.csv  # Defeitos e soluções por OS
+│   ├── export_defeitos_constatados.csv
+│   ├── export_defeitos_reclamados.csv
+│   ├── export_diagnosticos.csv
+│   ├── export_pecas_por_os.csv
+│   ├── export_os_sem_pecas.csv
+│   ├── export_produtos.csv
+│   ├── export_resumo_produto.csv
+│   ├── export_solucoes.csv
+│   └── export_tipos_atendimento.csv
 │
-├── data/                                 # CSVs originais exportados do sistema
-├── output/                               # CSVs limpos após o Épico 2
-├── FPA_3_termo_V1_9_9.ipynb              # Notebook principal (Pipeline + API)
-├── index.html                            # Frontend da aplicação
-└── README.md                             # Documentação do projeto
-Desenvolvido como solução inovadora para otimização de suporte técnico e manutenção.
+├── output/                            # Dados processados (gerados pelo notebook)
+│   ├── df_mestre.csv                  # DataFrame mestre consolidado
+│   ├── defeitos_constatados_clean.csv
+│   ├── defeitos_reclamados_clean.csv
+│   ├── diagnosticos_clean.csv
+│   └── solucoes_clean.csv
+│
+├── FPA_3_termo_V2_+_frontend.ipynb    # Notebook principal (pipeline + API)
+└── index.html                         # Frontend web da aplicação
+```
+
+---
+
+## ⚙️ Épicos Implementados
+
+### Épico 2 — Pré-processamento (US04)
+Construção do **DataFrame Mestre** unificando todas as fontes de dados:
+- Limpeza de textos com HTML tags e caracteres especiais
+- Normalização de strings (lowercase, remoção de acentos)
+- Cap de outliers no campo `tempo_resolucao_horas` (percentil 95)
+- Filtragem de OS concluídas e válidas
+- Enriquecimento da tabela de diagnósticos com descrições textuais
+
+### Épico 3 — Classificador ML V1.9 (US05–US08)
+Classificador que recebe **linguagem natural do cliente** e retorna o diagnóstico técnico:
+- Corpus de treino construído via mapeamento manual de 212 defeitos reclamados → 21 classes técnicas
+- Pipeline: `TfidfVectorizer (1–3 ngrams)` + `CalibratedClassifierCV(LinearSVC)`
+- Avaliação com validação cruzada estratificada (5-fold)
+- Cobre categorias: refrigeração, iluminação, estado físico, porta/gaxeta, elétrica, ventilação, sensores, vazamentos, etc.
+
+### Épico 4 — CBR (Case-Based Reasoning)
+Recuperação de casos históricos semelhantes ao problema atual:
+- Similaridade por match ponderado em variáveis categóricas (produto, tipo de atendimento, defeito reclamado, defeito constatado previsto)
+- Pesos configuráveis por dimensão
+- Taxa de sucesso calculada pela frequência relativa histórica real
+
+### Épico 5 — Regras de Negócio
+Filtros de viabilidade sobre as soluções recomendadas:
+- `taxa_min`: frequência mínima histórica (padrão: 10%)
+- `custo_max`: custo máximo aceitável (padrão: R$ 1.000)
+
+### Épico 7 — API FastAPI + Frontend
+Servidor web executável no **Google Colab**:
+- Endpoint `POST /analisar-os` recebe os dados da OS e retorna diagnóstico + recomendações
+- Frontend Bootstrap servido pelo próprio endpoint `GET /`
+- CORS habilitado para integração flexível
+
+---
+
+## 🚀 Como Executar
+
+### Pré-requisitos
+
+```bash
+pip install pandas numpy scikit-learn fastapi uvicorn pydantic
+```
+
+> O projeto foi desenvolvido para rodar no **Google Colab**. A célula do Épico 7 usa `google.colab.output.serve_kernel_port_as_window` para expor o servidor.
+
+### Passo a passo
+
+1. Faça upload dos arquivos da pasta `data/` para o ambiente Colab (ou ajuste `DATA_DIR` para o caminho correto).
+2. Abra o notebook `FPA_3_termo_V2_+_frontend.ipynb` no Google Colab.
+3. Execute as células em ordem:
+   - **Épico 2** → gera os arquivos em `output/`
+   - **Épico 3** → treina o classificador (objeto `clf` fica em memória)
+   - **Épico 4 e 5** → carrega o DataFrame mestre e define as funções de CBR e regras
+   - **Épico 7** → sobe o servidor FastAPI; um link para a interface web será exibido
+4. Clique no link gerado para abrir o **Agente Inteligente** no navegador.
+
+---
+
+## 🖥️ Interface Web
+
+A tela principal permite:
+
+| Campo | Descrição |
+|---|---|
+| **ID do Produto** | Identificador numérico do equipamento |
+| **Tipo de Atendimento** | Garantia, instalação, fora de garantia etc. |
+| **ID do Defeito Reclamado** | Código do defeito (opcional, editável) |
+| **Descrição do Problema** | Texto livre com a queixa do cliente |
+
+Após clicar em **"Analisar com IA"**, o sistema exibe:
+- Diagnóstico técnico pelo modelo ML
+- Solução recomendada com taxa de sucesso e custo estimado
+- Tabela com os casos históricos mais similares e seus scores
+
+---
+
+## 📊 Dados
+
+A base histórica utilizada contém **~552 mil ordens de serviço** da Telecontrol, cobrindo equipamentos de refrigeração (freezers, geladeiras, bebedouros, etc.). Os dados são anonimizados (`os_id_anonimo`).
+
+> ⚠️ Os arquivos CSV na pasta `data/` não estão incluídos neste repositório por conterem dados sensíveis. Solicite acesso à equipe responsável.
+
+---
+
+## 🛠️ Tecnologias
+
+- **Python 3** — pandas, numpy, scikit-learn
+- **FastAPI** + **Uvicorn** — API REST
+- **Bootstrap 5** — Interface web
+- **Google Colab** — Ambiente de execução
+
+---
+
+## 👥 Autores
+
+Projeto desenvolvido como trabalho de conclusão do 3º termo — Análise e Desenvolvimento de Sistemas.
