@@ -141,4 +141,18 @@ A base histórica utilizada contém **~552 mil ordens de serviço** da Telecontr
 
 ## 👥 Autores
 
-Projeto desenvolvido como trabalho de conclusão do 3º termo — Análise e Desenvolvimento de Sistemas.
+Nome do projeto: Agente Inteligente para Suporte à Decisão.
+
+Curso: Bacharelado em Inteligência Artificial – UNIMAR
+Disciplina: Fábrica de Projetos Ágeis III
+Integrantes do Grupo:
+Líder: Luiz Henrique Soares Chicareli de Andrade - 2035693 
+Enzo Luiz Tsutsumi de Almeida José - 2027602
+Felipe Augusto Santos Dorta de Oliveira - 2052799
+Gabriel Almeida Ermenegildo - 2028344
+Cawê Souza Aguiar - 2026239
+Leonardo Antonio da Silva - 2034024
+Felipe Estevo Freitas - 1990153
+João Pedro Parussolo Santos - 2031928
+
+
